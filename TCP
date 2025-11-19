@@ -1,0 +1,28 @@
+# TCP SERVER (Python)
+import socket
+server_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+server_socket.bind(('localhost',8080))
+server_socket.listen(1)
+print("Server is listening on port 8080...")
+conn,addr=server_socket.accept()
+print("Connected by:",addr)
+filename=conn.recv(1024).decode()
+try:
+ f=open(filename,'r')
+ data=f.read()
+ conn.send(data.encode())
+ f.close()
+except:
+ conn.send(b"File not found on server.")
+conn.close()
+server_socket.close()
+# TCP CLIENT (Python)
+import socket
+client_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+client_socket.connect(('localhost',8080))
+filename=input("Enter filename to request: ")
+client_socket.send(filename.encode())
+data=client_socket.recv(4096).decode()
+print("\n--- File Content ---\n")
+print(data)
+client_socket.close()
