@@ -1,0 +1,26 @@
+# UDP SERVER (Python)
+import socket
+server_socket=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+server_socket.bind(('localhost',8081))
+print("UDP Server is ready...")
+while True:
+ filename,addr=server_socket.recvfrom(1024)
+ filename=filename.decode()
+ print("Requested file:",filename)
+ try:
+ f=open(filename,'r')
+ data=f.read()
+ server_socket.sendto(data.encode(),addr)
+ f.close()
+ except:
+ server_socket.sendto(b"File not found on server.",addr)
+# UDP CLIENT (Python)
+import socket
+client_socket=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+server_address=('localhost',8081)
+filename=input("Enter filename to request: ")
+client_socket.sendto(filename.encode(),server_address)
+data,_=client_socket.recvfrom(4096)
+print("\n--- File Content ---\n")
+print(data.decode())
+client_socket.close()
